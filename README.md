@@ -47,7 +47,7 @@ This project implements a hybrid log classification and security analysis system
 ## Installation
 
 ```bash
-git clone https://github.com/yourusername/llm_log_detection.git
+gh repo clone mahanth-reddy/LLM-for-Security-Log-Detection
 cd llm_log_detection
 pip install -r requirements.txt
 ````
