@@ -3,9 +3,7 @@
 
 # LLM-based Security Log Detection and Analysis
 
-<p align="center">
-  <img src="static/logo.png" alt="Logo" width="200" height="200">
-</p>
+
 
 This project implements a hybrid log classification and security analysis system, leveraging LLMs (Large Language Models) to enhance security log detection and analysis capabilities. The system combines three complementary approaches to handle log patterns of varying complexity:
 
