@@ -526,26 +526,20 @@ Each recommendation should be concise but specific enough to be actionable.
         for ip in suspicious_ips[:5]:  # Limit to top 5 IPs
             ip_summaries.append(f"IP: {ip.get('ip')} - Requests: {ip.get('request_count')} - Level: {ip.get('suspicion_level')}")
         
-        # Create prompt for comprehensive recommendations
-        prompt = f"""Based on the security analysis results, provide comprehensive security recommendations.
-
-Event Summary:
-{"\n".join(event_summaries)}
-
-Suspicious IPs:
-{"\n".join(ip_summaries) if ip_summaries else "None detected"}
-
-Highest Severity: {highest_severity.value if highest_severity else "None"}
-
-Provide a comprehensive set of prioritized security recommendations that:
-1. Address the most critical issues first
-2. Include specific, actionable steps
-3. Cover both immediate response and long-term prevention
-4. Are organized in logical categories (e.g., Authentication, Network Security, etc.)
-
-Format your response as a bulleted list inside <recommendations> </recommendations> tags.
-Each recommendation should be clear and actionable for IT security personnel.
-"""
+        # Cleaned prompt assignment to avoid hidden characters
+        prompt = (
+            "Based on the security analysis results, provide comprehensive security recommendations.\n\n"
+            "Event Summary:\n" + "\n".join(event_summaries) + "\n\n"
+            "Suspicious IPs:\n" + ("\n".join(ip_summaries) if ip_summaries else "None detected") + "\n\n"
+            f"Highest Severity: {highest_severity.value if highest_severity else 'None'}\n\n"
+            "Provide a comprehensive set of prioritized security recommendations that:\n"
+            "1. Address the most critical issues first\n"
+            "2. Include specific, actionable steps\n"
+            "3. Cover both immediate response and long-term prevention\n"
+            "4. Are organized in logical categories (e.g., Authentication, Network Security, etc.)\n\n"
+            "Format your response as a bulleted list inside <recommendations> </recommendations> tags.\n"
+            "Each recommendation should be clear and actionable for IT security personnel."
+        )
 
         try:
             # Get response from LLM
@@ -570,115 +564,60 @@ Each recommendation should be clear and actionable for IT security personnel.
                                           events: List[SecurityEvent],
                                           suspicious_ips: List[Dict[str, Any]],
                                           highest_severity: SeverityLevel) -> List[str]:
-        """Rule-based comprehensive recommendations generator as fallback
-        
+        """Generate recommendations based on rule-based analysis.
         Args:
-            events: List of SecurityEvent objects
-            suspicious_ips: List of suspicious IP details
-            highest_severity: Highest severity level
-            
+            events: List of security events
+            suspicious_ips: List of suspicious IPs
+            highest_severity: Highest severity level found
         Returns:
             List of recommendation strings
         """
         recommendations = []
         
-        # Critical and high severity recommendations
-        critical_events = [e for e in events if e.severity == SeverityLevel.CRITICAL]
-        high_events = [e for e in events if e.severity == SeverityLevel.HIGH]
+        # Add severity-based recommendations
+        if highest_severity == SeverityLevel.CRITICAL:
+            recommendations.append("CRITICAL: Immediate action required. Review all critical events and implement recommended fixes.")
+        elif highest_severity == SeverityLevel.HIGH:
+            recommendations.append("HIGH: Prompt attention needed. Address high severity issues within 24 hours.")
         
-        if critical_events:
-            recommendations.append("🚨 IMMEDIATE ACTION REQUIRED: The following critical security issues require urgent attention:")
-            
-            # Add specific critical event details
-            for i, event in enumerate(critical_events[:3]):  # List top 3 critical issues
-                recommendations.append(f"  {i+1}. {event.event_type} - {event.log_message[:100]}...")
-                
-            # Group by attack type for targeted recommendations
-            attack_groups = {}
-            for event in critical_events:
-                if event.attack_type not in attack_groups:
-                    attack_groups[event.attack_type] = []
-                attack_groups[event.attack_type].append(event)
-            
-            for attack_type, events_list in attack_groups.items():
-                if attack_type != AttackType.UNKNOWN and len(events_list) > 0:
-                    recommendations.append(f"For {attack_type.value} attacks ({len(events_list)} detected):")
-                    for action in events_list[0].recommendation.split('\n'):
-                        if action.strip():
-                            recommendations.append(f"  • {action.strip()}")
+        # Add attack type specific recommendations
+        attack_types = {event.attack_type for event in events if event.attack_type != AttackType.UNKNOWN}
         
-        elif high_events:
-            recommendations.append("⚠️ HIGH PRIORITY: The following high severity security issues should be addressed promptly:")
-            
-            # Add specific high event details
-            for i, event in enumerate(high_events[:3]):  # List top 3 high issues
-                recommendations.append(f"  {i+1}. {event.event_type} - {event.log_message[:100]}...")
-                
-            # Group by attack type for targeted recommendations
-            attack_groups = {}
-            for event in high_events:
-                if event.attack_type not in attack_groups:
-                    attack_groups[event.attack_type] = []
-                attack_groups[event.attack_type].append(event)
-            
-            for attack_type, events_list in attack_groups.items():
-                if attack_type != AttackType.UNKNOWN and len(events_list) > 0:
-                    recommendations.append(f"For {attack_type.value} attacks ({len(events_list)} detected):")
-                    for action in events_list[0].recommendation.split('\n'):
-                        if action.strip():
-                            recommendations.append(f"  • {action.strip()}")
+        if AttackType.BRUTE_FORCE in attack_types:
+            recommendations.append("Implement rate limiting and account lockout policies to prevent brute force attacks.")
         
-        # Suspicious IP recommendations
+        if AttackType.SQL_INJECTION in attack_types:
+            recommendations.append("Review and sanitize all database queries. Use parameterized queries to prevent SQL injection.")
+        
+        if AttackType.XSS in attack_types:
+            recommendations.append("Implement proper input validation and output encoding to prevent XSS attacks.")
+        
+        if AttackType.FILE_INCLUSION in attack_types:
+            recommendations.append("Restrict file access and implement proper path validation to prevent file inclusion attacks.")
+        
+        if AttackType.COMMAND_INJECTION in attack_types:
+            recommendations.append("Sanitize all user inputs used in command execution to prevent command injection.")
+        
+        if AttackType.PATH_TRAVERSAL in attack_types:
+            recommendations.append("Implement proper path validation and access controls to prevent path traversal attacks.")
+        
+        if AttackType.PRIVILEGE_ESCALATION in attack_types:
+            recommendations.append("Review user permissions and implement principle of least privilege.")
+        
+        if AttackType.DENIAL_OF_SERVICE in attack_types:
+            recommendations.append("Implement rate limiting and DDoS protection measures.")
+        
+        # Add IP-based recommendations
         if suspicious_ips:
-            high_suspicion_ips = [ip["ip"] for ip in suspicious_ips if ip["suspicion_level"] == "High"]
-            medium_suspicion_ips = [ip["ip"] for ip in suspicious_ips if ip["suspicion_level"] == "Medium"]
-            
-            if high_suspicion_ips:
-                ips_to_show = high_suspicion_ips[:5]
-                ips_text = ', '.join(ips_to_show)
-                if len(high_suspicion_ips) > 5:
-                    ips_text += f' and {len(high_suspicion_ips) - 5} more'
-                    
-                recommendations.append(f"🛡️ IP BLOCKING RECOMMENDED: Consider blocking or rate-limiting the following suspicious IPs: {ips_text}")
-                recommendations.append("  • Implement temporary IP blocks in your firewall or WAF")
-                recommendations.append("  • Review logs for these IPs to understand the nature of suspicious activity")
-                recommendations.append("  • Consider implementing adaptive rate limiting for authentication endpoints")
-            
-            if medium_suspicion_ips and not high_suspicion_ips:  # Only show if no high suspicion IPs
-                recommendations.append("📝 MONITORING RECOMMENDED: Monitor the following IPs for continued suspicious activity")
+            recommendations.append(f"Investigate and potentially block {len(suspicious_ips)} suspicious IP addresses.")
         
-        # Specific attack pattern recommendations
-        if any(e.attack_type == AttackType.BRUTE_FORCE for e in events):
-            if not any(r.startswith("🔐 AUTHENTICATION SECURITY") for r in recommendations):
-                recommendations.append("🔐 AUTHENTICATION SECURITY: Evidence of brute force attempts suggests the following measures:")
-                recommendations.append("  • Implement account lockout policies (e.g., 5 failed attempts = 15 min lockout)")
-                recommendations.append("  • Enable multi-factor authentication for all administrative accounts")
-                recommendations.append("  • Consider implementing CAPTCHA after 2-3 failed login attempts")
-                recommendations.append("  • Alert on unusual login patterns or multiple failures")
-        
-        if any(e.attack_type in [AttackType.SQL_INJECTION, AttackType.XSS, AttackType.COMMAND_INJECTION] for e in events):
-            if not any(r.startswith("🌐 WEB APPLICATION SECURITY") for r in recommendations):
-                recommendations.append("🌐 WEB APPLICATION SECURITY: Evidence of injection attacks suggests the following measures:")
-                recommendations.append("  • Review input validation and output encoding throughout the application")
-                recommendations.append("  • Deploy a Web Application Firewall (WAF) with appropriate rule sets")
-                recommendations.append("  • Consider a security code review focusing on user input handling")
-                recommendations.append("  • Implement Content Security Policy (CSP) headers")
-        
-        if any(e.attack_type in [AttackType.FILE_INCLUSION, AttackType.PATH_TRAVERSAL] for e in events):
-            if not any(r.startswith("📂 FILE SYSTEM SECURITY") for r in recommendations):
-                recommendations.append("📂 FILE SYSTEM SECURITY: Evidence of path manipulation attempts suggests the following measures:")
-                recommendations.append("  • Audit file access controls and permissions")
-                recommendations.append("  • Implement strict path validation for all file operations")
-                recommendations.append("  • Use safe APIs that prevent path traversal by design")
-        
-        # Add general recommendation if list is empty or very short
-        if len(recommendations) < 2:
-            recommendations.append("🔍 GENERAL SECURITY MEASURES: While no critical issues were detected, consider these best practices:")
-            recommendations.append("  • Keep all systems and applications updated with the latest security patches")
-            recommendations.append("  • Implement proper logging and monitoring across all systems")
-            recommendations.append("  • Conduct regular security assessments and penetration testing")
-            recommendations.append("  • Review access controls and implement least privilege principle")
-            recommendations.append("  • Develop and test incident response procedures")
+        # Add general recommendations
+        recommendations.extend([
+            "Review and update security policies and procedures.",
+            "Ensure all systems are patched and up to date.",
+            "Implement comprehensive logging and monitoring.",
+            "Conduct regular security assessments and penetration testing."
+        ])
         
         return recommendations
     
