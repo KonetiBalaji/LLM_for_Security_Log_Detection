@@ -3,127 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLM Security Log Analysis</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;">
+    <title>SENTINEL — Security Log Intelligence Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            padding-top: 2rem;
-            padding-bottom: 2rem;
-            background-color: #f8f9fa;
-        }
-        .header {
-            padding: 2rem 1rem;
-            margin-bottom: 2rem;
-            background-color: #e9ecef;
-            border-radius: 0.3rem;
-        }
-        .card {
-            margin-bottom: 1.5rem;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        }
-        .results-container {
-            max-height: 600px;
-            overflow-y: auto;
-        }
-        .nav-tabs {
-            margin-bottom: 1rem;
-        }
-        .severity-critical {
-            color: #721c24;
-            background-color: #f8d7da;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-        }
-        .severity-high {
-            color: #856404;
-            background-color: #fff3cd;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-        }
-        .severity-medium {
-            color: #0c5460;
-            background-color: #d1ecf1;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-        }
-        .severity-low {
-            color: #155724;
-            background-color: #d4edda;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-        }
+        body { padding: 2rem 0; background: #f8f9fa; }
+        .header { padding: 2rem 1rem; margin-bottom: 2rem; background: linear-gradient(135deg, #1a1a2e, #16213e); color: #fff; border-radius: 0.5rem; }
+        .header h1 { font-weight: 700; }
+        .card { margin-bottom: 1.5rem; box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075); }
+        .results-container { max-height: 650px; overflow-y: auto; }
+        .severity-critical { color: #721c24; background: #f8d7da; padding: .2rem .5rem; border-radius: .25rem; font-weight: 600; }
+        .severity-high { color: #856404; background: #fff3cd; padding: .2rem .5rem; border-radius: .25rem; }
+        .severity-medium { color: #0c5460; background: #d1ecf1; padding: .2rem .5rem; border-radius: .25rem; }
+        .severity-low { color: #155724; background: #d4edda; padding: .2rem .5rem; border-radius: .25rem; }
+        .mitre-badge { font-size: 0.8em; background: #e2e3f1; color: #3d348b; padding: .15rem .4rem; border-radius: .2rem; font-family: monospace; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header text-center">
-            <h1>LLM Security Log Analysis</h1>
-            <p class="lead">Enhance security log detection with LLMs, BERT, and regex</p>
+            <h1>SENTINEL</h1>
+            <p class="lead mb-0">AI-Driven Security Log Intelligence Platform</p>
+            <small class="text-light opacity-75">Hybrid detection: Regex + BERT + LLM | MITRE ATT&CK Mapped</small>
         </div>
 
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-5">
                 <div class="card">
-                    <div class="card-header">
-                        <h5>Upload Log File</h5>
-                    </div>
+                    <div class="card-header"><h5 class="mb-0">Upload Log File</h5></div>
                     <div class="card-body">
                         <form id="uploadForm" enctype="multipart/form-data">
                             <div class="mb-3">
-                                <label for="logFile" class="form-label">Select Log File</label>
-                                <input class="form-control" type="file" id="logFile" name="file">
-                                <div class="form-text">Supported formats: .log, .txt, .csv</div>
+                                <label for="logFile" class="form-label">Select File</label>
+                                <input class="form-control" type="file" id="logFile" name="file" accept=".log,.txt,.csv">
+                                <div class="form-text">Supported: .log, .txt, .csv (max 50 MB)</div>
                             </div>
                             <div class="mb-3">
-                                <div class="form-check">
+                                <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="radio" name="processType" id="classifyOnly" value="classify" checked>
-                                    <label class="form-check-label" for="classifyOnly">
-                                        Classification Only
-                                    </label>
+                                    <label class="form-check-label" for="classifyOnly">Classify</label>
                                 </div>
-                                <div class="form-check">
+                                <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="radio" name="processType" id="fullAnalysis" value="analyze">
-                                    <label class="form-check-label" for="fullAnalysis">
-                                        Full Security Analysis
-                                    </label>
+                                    <label class="form-check-label" for="fullAnalysis">Full Analysis</label>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary" id="processButton">Process</button>
+                            <button type="submit" class="btn btn-primary w-100">Process</button>
                         </form>
                     </div>
                 </div>
 
                 <div class="card">
-                    <div class="card-header">
-                        <h5>Raw Log Input</h5>
-                    </div>
+                    <div class="card-header"><h5 class="mb-0">Paste Raw Logs</h5></div>
                     <div class="card-body">
                         <form id="rawLogForm">
                             <div class="mb-3">
-                                <label for="logText" class="form-label">Paste Raw Logs</label>
-                                <textarea class="form-control" id="logText" rows="10" placeholder="Paste your logs here..."></textarea>
+                                <textarea class="form-control" id="logText" rows="8" placeholder="Paste log lines here…"></textarea>
                             </div>
-                            <div class="mb-3">
-                                <label for="logFormat" class="form-label">Log Format (Optional)</label>
-                                <input type="text" class="form-control" id="logFormat" placeholder="e.g., %h %l %u %t \"%r\" %>s %b">
-                                <div class="form-text">Leave blank for auto-detection</div>
-                            </div>
-                            <button type="submit" class="btn btn-primary" id="processRawButton">Process Raw Logs</button>
+                            <button type="submit" class="btn btn-primary w-100">Analyse Raw Logs</button>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-7">
                 <div class="card">
-                    <div class="card-header">
-                        <h5>Results</h5>
-                    </div>
-                    <div class="card-body results-container">
-                        <div id="resultsContent">
-                            <div class="text-center text-muted">
-                                <p>Process a log file to see results</p>
-                            </div>
+                    <div class="card-header"><h5 class="mb-0">Results</h5></div>
+                    <div class="card-body results-container" id="resultsContent">
+                        <div class="text-center text-muted py-5">
+                            <p>Upload a log file or paste raw logs to begin analysis.</p>
                         </div>
                     </div>
                 </div>
@@ -132,244 +80,157 @@
     </div>
 
     <!-- Loading Modal -->
-    <div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body text-center p-4">
-                    <div class="spinner-border text-primary mb-3" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <h5 id="loadingMessage">Processing logs...</h5>
-                    <p class="text-muted" id="loadingDetail">This may take a few moments</p>
-                </div>
+    <div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content text-center p-4">
+                <div class="spinner-border text-primary mb-3" role="status"></div>
+                <h6 id="loadingMessage">Processing…</h6>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const uploadForm = document.getElementById('uploadForm');
-            const rawLogForm = document.getElementById('rawLogForm');
-            const resultsContent = document.getElementById('resultsContent');
-            const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
-            const loadingMessage = document.getElementById('loadingMessage');
-            const loadingDetail = document.getElementById('loadingDetail');
+    document.addEventListener('DOMContentLoaded', function() {
+        const resultsEl = document.getElementById('resultsContent');
+        const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+        const loadingMsg = document.getElementById('loadingMessage');
 
-            uploadForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                const fileInput = document.getElementById('logFile');
-                if (!fileInput.files || fileInput.files.length === 0) {
-                    alert('Please select a file to process');
-                    return;
+        // ---- Escape HTML to prevent XSS ----
+        function esc(str) {
+            if (str == null) return '';
+            const div = document.createElement('div');
+            div.appendChild(document.createTextNode(String(str)));
+            return div.innerHTML;
+        }
+
+        // ---- Upload form ----
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('logFile');
+            if (!fileInput.files.length) { alert('Select a file'); return; }
+
+            const type = document.querySelector('input[name="processType"]:checked').value;
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            loadingMsg.textContent = 'Processing…';
+            loadingModal.show();
+
+            try {
+                const endpoint = type === 'classify' ? '/v1/classify' : '/v1/analyze';
+                const resp = await fetch(endpoint, { method: 'POST', body: formData });
+                if (!resp.ok) { const err = await resp.json().catch(() => ({})); throw new Error(err.detail || resp.statusText); }
+
+                if (type === 'classify') {
+                    const blob = await resp.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url; a.download = 'classified_logs.csv';
+                    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+                    resultsEl.innerHTML = '<div class="alert alert-success">Classification complete — CSV downloaded.</div>';
+                } else {
+                    displayResults(await resp.json());
                 }
-
-                const file = fileInput.files[0];
-                const processType = document.querySelector('input[name="processType"]:checked').value;
-                
-                const formData = new FormData();
-                formData.append('file', file);
-
-                // Show loading modal
-                loadingMessage.textContent = 'Processing logs...';
-                loadingDetail.textContent = `Processing ${file.name} (${processType})`;
-                loadingModal.show();
-
-                try {
-                    const endpoint = processType === 'classify' ? '/classify/' : '/analyze/';
-                    const response = await fetch(endpoint, {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`Server responded with status: ${response.status}`);
-                    }
-
-                    if (processType === 'classify') {
-                        // For classification, download the CSV file
-                        const blob = await response.blob();
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'classified_logs.csv';
-                        document.body.appendChild(a);
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                        a.remove();
-                        
-                        resultsContent.innerHTML = `
-                            <div class="alert alert-success">
-                                <h4>Classification Complete</h4>
-                                <p>The classified logs have been downloaded as a CSV file.</p>
-                            </div>
-                        `;
-                    } else {
-                        // For analysis, display the results
-                        const data = await response.json();
-                        displayResults(data);
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    resultsContent.innerHTML = `
-                        <div class="alert alert-danger">
-                            <h4>Error</h4>
-                            <p>${error.message}</p>
-                        </div>
-                    `;
-                } finally {
-                    loadingModal.hide();
-                }
-            });
-
-            rawLogForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                const logText = document.getElementById('logText').value.trim();
-                const logFormat = document.getElementById('logFormat').value.trim();
-                
-                if (!logText) {
-                    alert('Please enter log data');
-                    return;
-                }
-
-                // Show loading modal
-                loadingMessage.textContent = 'Processing raw logs...';
-                loadingDetail.textContent = 'Analyzing log data';
-                loadingModal.show();
-
-                try {
-                    const formData = new FormData();
-                    formData.append('logs', logText);
-                    if (logFormat) {
-                        formData.append('log_format', logFormat);
-                    }
-
-                    const response = await fetch('/process_raw_logs/', {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`Server responded with status: ${response.status}`);
-                    }
-
-                    const data = await response.json();
-                    displayResults(data);
-                } catch (error) {
-                    console.error('Error:', error);
-                    resultsContent.innerHTML = `
-                        <div class="alert alert-danger">
-                            <h4>Error</h4>
-                            <p>${error.message}</p>
-                        </div>
-                    `;
-                } finally {
-                    loadingModal.hide();
-                }
-            });
-
-            function displayResults(data) {
-                let html = `
-                    <ul class="nav nav-tabs" id="resultsTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab">Summary</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="events-tab" data-bs-toggle="tab" data-bs-target="#events" type="button" role="tab">Security Events</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="recommendations-tab" data-bs-toggle="tab" data-bs-target="#recommendations" type="button" role="tab">Recommendations</button>
-                        </li>
-                    </ul>
-                    <div class="tab-content" id="resultsTabContent">
-                        <div class="tab-pane fade show active" id="summary" role="tabpanel">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Analysis Summary</h5>
-                                    <p>${data.summary || 'No summary available'}</p>
-                                    ${data.highest_severity ? `<p><strong>Highest Severity: </strong><span class="severity-${data.highest_severity.toLowerCase()}">${data.highest_severity}</span></p>` : ''}
-                                    <p><strong>Requires Immediate Attention: </strong>${data.requires_immediate_attention ? 'Yes' : 'No'}</p>
-                                </div>
-                            </div>
-                            
-                            ${data.ip_analysis && data.ip_analysis.suspicious && data.ip_analysis.suspicious.length > 0 ? `
-                                <div class="card mt-3">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Suspicious IP Addresses</h5>
-                                        <div class="table-responsive">
-                                            <table class="table table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th>IP Address</th>
-                                                        <th>Request Count</th>
-                                                        <th>Suspicion Level</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    ${data.ip_analysis.suspicious.map(ip => `
-                                                        <tr>
-                                                            <td>${ip.ip}</td>
-                                                            <td>${ip.request_count}</td>
-                                                            <td>${ip.suspicion_level}</td>
-                                                        </tr>
-                                                    `).join('')}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            ` : ''}
-                        </div>
-                        
-                        <div class="tab-pane fade" id="events" role="tabpanel">
-                            ${data.events && data.events.length > 0 ? `
-                                <div class="table-responsive">
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Event Type</th>
-                                                <th>Severity</th>
-                                                <th>Details</th>
-                                                <th>Recommendation</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            ${data.events.map(event => `
-                                                <tr>
-                                                    <td>${event.event_type}</td>
-                                                    <td><span class="severity-${event.severity.toLowerCase()}">${event.severity}</span></td>
-                                                    <td>
-                                                        <strong>Source IPs:</strong> ${event.source_ips.join(', ')}<br>
-                                                        ${event.url_pattern ? `<strong>URL:</strong> ${event.url_pattern}<br>` : ''}
-                                                        ${event.attack_type !== 'UNKNOWN' ? `<strong>Attack Type:</strong> ${event.attack_type}<br>` : ''}
-                                                        ${event.root_cause ? `<strong>Root Cause:</strong> ${event.root_cause}` : ''}
-                                                    </td>
-                                                    <td>${event.recommendation || 'N/A'}</td>
-                                                </tr>
-                                            `).join('')}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            ` : '<div class="alert alert-info">No security events detected</div>'}
-                        </div>
-                        
-                        <div class="tab-pane fade" id="recommendations" role="tabpanel">
-                            ${data.recommendations && data.recommendations.length > 0 ? `
-                                <ul class="list-group">
-                                    ${data.recommendations.map(rec => `
-                                        <li class="list-group-item">${rec}</li>
-                                    `).join('')}
-                                </ul>
-                            ` : '<div class="alert alert-info">No recommendations available</div>'}
-                        </div>
-                    </div>
-                `;
-                
-                resultsContent.innerHTML = html;
-            }
+            } catch (err) {
+                resultsEl.innerHTML = '<div class="alert alert-danger">Error: ' + esc(err.message) + '</div>';
+            } finally { loadingModal.hide(); }
         });
+
+        // ---- Raw logs form ----
+        document.getElementById('rawLogForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const text = document.getElementById('logText').value.trim();
+            if (!text) { alert('Enter log data'); return; }
+
+            loadingMsg.textContent = 'Analysing…';
+            loadingModal.show();
+
+            try {
+                const formData = new FormData();
+                formData.append('logs', text);
+                const resp = await fetch('/v1/analyze/raw', { method: 'POST', body: formData });
+                if (!resp.ok) { const err = await resp.json().catch(() => ({})); throw new Error(err.detail || resp.statusText); }
+                displayResults(await resp.json());
+            } catch (err) {
+                resultsEl.innerHTML = '<div class="alert alert-danger">Error: ' + esc(err.message) + '</div>';
+            } finally { loadingModal.hide(); }
+        });
+
+        // ---- Render results safely ----
+        function displayResults(data) {
+            let html = '<ul class="nav nav-tabs mb-3" role="tablist">';
+            html += '<li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-summary">Summary</button></li>';
+            html += '<li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-events">Events (' + (data.events ? data.events.length : 0) + ')</button></li>';
+            html += '<li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-mitre">MITRE</button></li>';
+            html += '<li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-recs">Actions</button></li>';
+            html += '</ul><div class="tab-content">';
+
+            // Summary tab
+            html += '<div class="tab-pane fade show active" id="tab-summary">';
+            html += '<p>' + esc(data.summary) + '</p>';
+            if (data.highest_severity) {
+                html += '<p><strong>Highest Severity:</strong> <span class="severity-' + esc(data.highest_severity).toLowerCase() + '">' + esc(data.highest_severity) + '</span></p>';
+            }
+            html += '<p><strong>Immediate Attention:</strong> ' + (data.requires_immediate_attention ? '<span class="text-danger fw-bold">Yes</span>' : 'No') + '</p>';
+
+            if (data.ip_analysis && data.ip_analysis.suspicious && data.ip_analysis.suspicious.length) {
+                html += '<h6 class="mt-3">Suspicious IPs</h6><table class="table table-sm"><thead><tr><th>IP</th><th>Requests</th><th>Level</th></tr></thead><tbody>';
+                data.ip_analysis.suspicious.forEach(function(ip) {
+                    html += '<tr><td>' + esc(ip.ip) + '</td><td>' + esc(ip.request_count) + '</td><td>' + esc(ip.suspicion_level) + '</td></tr>';
+                });
+                html += '</tbody></table>';
+            }
+            html += '</div>';
+
+            // Events tab
+            html += '<div class="tab-pane fade" id="tab-events">';
+            if (data.events && data.events.length) {
+                html += '<div class="table-responsive"><table class="table table-sm table-striped"><thead><tr><th>Type</th><th>Severity</th><th>Attack</th><th>MITRE</th><th>Root Cause</th></tr></thead><tbody>';
+                data.events.forEach(function(ev) {
+                    const mitre = ev.mitre_technique;
+                    const mitreStr = mitre ? '<span class="mitre-badge">' + esc(mitre.technique_id) + '</span> ' + esc(mitre.name) : '—';
+                    html += '<tr>';
+                    html += '<td>' + esc(ev.event_type) + '</td>';
+                    html += '<td><span class="severity-' + esc(ev.severity).toLowerCase() + '">' + esc(ev.severity) + '</span></td>';
+                    html += '<td>' + esc(ev.attack_type) + '</td>';
+                    html += '<td>' + mitreStr + '</td>';
+                    html += '<td>' + esc(ev.root_cause || '—') + '</td>';
+                    html += '</tr>';
+                });
+                html += '</tbody></table></div>';
+            } else {
+                html += '<div class="alert alert-info">No security events detected.</div>';
+            }
+            html += '</div>';
+
+            // MITRE tab
+            html += '<div class="tab-pane fade" id="tab-mitre">';
+            if (data.mitre_coverage && data.mitre_coverage.length) {
+                html += '<table class="table table-sm"><thead><tr><th>Technique</th><th>Name</th><th>Tactic</th></tr></thead><tbody>';
+                data.mitre_coverage.forEach(function(t) {
+                    html += '<tr><td><span class="mitre-badge">' + esc(t.technique_id) + '</span></td><td>' + esc(t.name) + '</td><td>' + esc(t.tactic) + '</td></tr>';
+                });
+                html += '</tbody></table>';
+            } else {
+                html += '<div class="alert alert-info">No MITRE ATT&CK techniques mapped.</div>';
+            }
+            html += '</div>';
+
+            // Recommendations tab
+            html += '<div class="tab-pane fade" id="tab-recs">';
+            if (data.recommendations && data.recommendations.length) {
+                html += '<ul class="list-group">';
+                data.recommendations.forEach(function(r) { html += '<li class="list-group-item">' + esc(r) + '</li>'; });
+                html += '</ul>';
+            } else {
+                html += '<div class="alert alert-info">No recommendations.</div>';
+            }
+            html += '</div></div>';
+
+            resultsEl.innerHTML = html;
+        }
+    });
     </script>
 </body>
 </html>
