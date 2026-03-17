@@ -7,6 +7,7 @@ from typing import Any
 
 from sentinel.classifiers.base import Classifier, EntityExtractor
 from sentinel.classifiers.bert import BertClassifier
+from sentinel.classifiers.calibration import PlattCalibrator
 from sentinel.classifiers.llm import LLMClassifier
 from sentinel.classifiers.regex import RegexClassifier
 from sentinel.core.config import SentinelSettings, get_settings
@@ -41,6 +42,7 @@ class ClassificationPipeline:
         settings: SentinelSettings | None = None,
     ) -> None:
         self._settings = settings or get_settings()
+        self._calibrator = PlattCalibrator()
 
         if classifiers is not None:
             self._classifiers = classifiers
@@ -82,14 +84,17 @@ class ClassificationPipeline:
                 continue
 
             if label is not None:
+                # Apply confidence calibration based on the classifier method
+                calibrated = self._calibrator.calibrate(confidence, classifier.method.value)
+
                 return ClassificationResult(
                     source=source,
                     log_message=log_message,
                     label=label,
                     method=classifier.method,
-                    confidence=confidence,
+                    confidence=calibrated,
                     entities=entities,
-                    reasoning=self._build_reasoning(classifier.method, label, confidence),
+                    reasoning=self._build_reasoning(classifier.method, label, calibrated),
                 )
 
         # All classifiers declined — return Unclassified

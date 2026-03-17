@@ -5,7 +5,7 @@
 [![CI](https://github.com/KonetiBalaji/LLM_for_Security_Log_Detection/actions/workflows/ci.yml/badge.svg)](https://github.com/KonetiBalaji/LLM_for_Security_Log_Detection/actions)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![Tests](https://img.shields.io/badge/tests-140%20passed-brightgreen.svg)]()
-[![Coverage](https://img.shields.io/badge/coverage-68%25-yellow.svg)]()
+[![Coverage](https://img.shields.io/badge/coverage-55%25-yellow.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
@@ -157,20 +157,33 @@ python -m sentinel.cli.main benchmark
 | 3 | LLM (Simulated) | Keyword-based simulation of LLM classification |
 | 4 | **Hybrid (Regex → BERT → LLM)** | Full cascade pipeline |
 
+### Results on Synthetic Dataset (2,410 labelled samples)
+
+| Approach | Accuracy | F1 Macro | F1 Weighted | Throughput |
+|----------|----------|----------|-------------|------------|
+| Regex Only | 0.7100 | 0.4688 | — | 467 logs/s |
+| LLM (Simulated) | 0.7183 | 0.4951 | — | 27,556 logs/s |
+| **Hybrid (Regex + LLM)** | **0.7917** | **0.5639** | — | 457 logs/s |
+
+> The hybrid cascade outperforms each individual method. Full per-class metrics and confusion matrices are in [`results/benchmarks/benchmark_results.json`](results/benchmarks/benchmark_results.json). BERT-tier results will be added when model retraining is completed on this environment.
+
 ### Metrics Reported
 
 - **Per-class**: Precision, Recall, F1-Score, Support
 - **Aggregate**: Accuracy, F1 Macro, F1 Weighted
-- **Operational**: Throughput (logs/second), latency
+- **Operational**: Throughput (logs/second)
 - **Confusion Matrix**: Full N×N matrix for error analysis
 
 ### Evaluated Datasets
 
-| Dataset | Source | Records | Log Type |
-|---------|--------|---------|----------|
-| Synthetic | Generated | 2,410 | Mixed (OpenStack, CRM, HR, Billing, API) |
+| Dataset | Source | Records | Status |
+|---------|--------|---------|--------|
+| Synthetic | Generated | 2,410 | Benchmarked (see results above) |
+| HDFS | Loghub (2k sample) | 2,000 | Loader implemented, evaluation pending |
+| BGL | Loghub (2k sample) | 2,000 | Loader implemented, evaluation pending |
+| Thunderbird | Loghub (2k sample) | 2,000 | Loader implemented, evaluation pending |
 
-> **Note**: Integration with public datasets (HDFS from Loghub, BGL, Thunderbird) is supported via the HDFS parser and dataset loader framework. Cross-domain evaluation is part of the active research roadmap.
+> **Note**: Public dataset loaders auto-download from Loghub. Cross-domain evaluation with ground-truth anomaly labels is in progress.
 
 ---
 
@@ -379,7 +392,7 @@ sentinel/
 
 ## Roadmap
 
-### Completed
+### Completed (integrated into runtime pipeline)
 
 - [x] Hybrid multi-tier classification pipeline (Regex → BERT → LLM)
 - [x] MITRE ATT&CK technique mapping (11 techniques, 7 tactics)
@@ -390,19 +403,22 @@ sentinel/
 - [x] Docker containerisation
 - [x] Web interface with MITRE display
 - [x] Multi-format log parsing (6 formats with auto-detection)
-- [x] Benchmark harness for multi-model, multi-dataset comparison
-- [x] Cross-domain evaluation on HDFS, BGL, and Thunderbird public datasets
-- [x] Confidence calibration (Platt scaling and temperature scaling)
-- [x] Technical white paper: "Hybrid Multi-Tier Approaches to Security Log Classification"
-- [x] MLflow experiment tracking integration
-- [x] Isolation Forest anomaly detection tier
-- [x] SHAP-style explainability for ML classifier decisions (word-level leave-one-out)
-- [x] Streaming ingestion (Kafka consumer with batch processing)
 - [x] SOC analyst feedback loop (true/false positive marking with retraining export)
-- [x] Adversarial robustness testing (log poisoning, prompt injection, label flipping)
 - [x] AWS Terraform deployment (ECS Fargate + ALB + S3 + CloudWatch)
+
+### Completed (modules implemented and tested, available for opt-in use)
+
+- [x] Benchmark harness for multi-model, multi-dataset comparison
+- [x] Cross-domain dataset loaders for HDFS, BGL, and Thunderbird public datasets
+- [x] Confidence calibration (Platt scaling and temperature scaling)
+- [x] Isolation Forest anomaly detection module
+- [x] SHAP-style explainability module (word-level leave-one-out)
+- [x] Streaming ingestion module (Kafka consumer with batch processing)
+- [x] Adversarial robustness test suite (log poisoning, prompt injection, label flipping)
 - [x] Zero-shot / few-shot classification evaluation on unseen log formats
-- [x] Privacy-preserving log analysis (PII detection and masking)
+- [x] Privacy-preserving log analysis module (PII detection and masking)
+- [x] MLflow experiment tracking module
+- [x] Technical white paper draft: "Hybrid Multi-Tier Approaches to Security Log Classification"
 
 ---
 

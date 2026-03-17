@@ -101,6 +101,10 @@ def run_benchmark(datasets: list[str] | None = None) -> dict[str, Any]:
                 f"({metrics['throughput_logs_per_sec']} logs/s)"
             )
 
+            # Log to MLflow if available
+            from sentinel.evaluation.mlflow_tracking import log_benchmark_run
+            log_benchmark_run(approach_name, ds_name, metrics)
+
         all_results[ds_name] = dataset_results
 
     # --- Save results ---

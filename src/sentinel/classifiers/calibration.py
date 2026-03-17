@@ -139,7 +139,9 @@ class TemperatureScaler:
         best_loss = float("inf")
 
         for temp in np.arange(0.1, 5.1, 0.1):
-            scaled_probs = self.scale(logits / max(temp, 1e-8) * self.temperature)
+            # Temporarily set temperature for self.scale() to use
+            self.temperature = temp
+            scaled_probs = self.scale(logits)
             try:
                 loss = log_loss(true_labels, scaled_probs)
                 if loss < best_loss:

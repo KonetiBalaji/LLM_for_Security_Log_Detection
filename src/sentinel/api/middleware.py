@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hmac
 import logging
 import time
 from collections import defaultdict
@@ -33,7 +34,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
         token = request.headers.get("Authorization", "")
         expected = f"Bearer {settings.auth_token}"
-        if token != expected:
+        if not hmac.compare_digest(token.encode(), expected.encode()):
             return JSONResponse(status_code=401, content={"detail": "Invalid or missing token"})
 
         return await call_next(request)

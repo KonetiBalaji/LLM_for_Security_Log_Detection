@@ -42,8 +42,10 @@ coverage.xml
 # Type checking
 .mypy_cache/
 
-# Results (generated)
+# Results (generated, except committed benchmarks)
 results/
+!results/benchmarks/
+!results/benchmarks/benchmark_results.json
 
 # Temporary files
 *.tmp

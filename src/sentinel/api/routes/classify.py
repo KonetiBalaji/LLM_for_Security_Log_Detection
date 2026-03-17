@@ -52,7 +52,8 @@ async def classify_file(
         results = pipeline.classify(logs)
 
         # Write output
-        output_path = tempfile.mktemp(suffix=".csv")
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".csv") as out_tmp:
+            output_path = out_tmp.name
         df = pd.DataFrame([r.to_dict() for r in results])
         df.to_csv(output_path, index=False)
 

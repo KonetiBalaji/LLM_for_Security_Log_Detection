@@ -15,6 +15,7 @@ from sentinel.analyzers.orchestrator import SecurityAnalyzer
 from sentinel.api.dependencies import get_analyzer, get_pipeline
 from sentinel.classifiers.pipeline import ClassificationPipeline
 from sentinel.parsers.registry import detect_log_type, preprocess_logs
+from sentinel.privacy.pii_detector import PIIDetector
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,9 @@ router = APIRouter(prefix="/v1", tags=["analyze"])
 
 _ALLOWED_EXTENSIONS = {".csv", ".log", ".txt"}
 _MAX_FILE_BYTES = 50 * 1024 * 1024
+
+# Shared PII detector instance — masks emails, SSNs, secrets before response
+_pii_detector = PIIDetector()
 
 
 @router.post("/analyze")
@@ -53,16 +57,21 @@ async def analyze_file(
         classified = pipeline.classify(logs)
         result = analyzer.analyze(classified)
 
-        return JSONResponse(content=result.to_dict())
+        response = result.to_dict()
+        _mask_pii_in_response(response)
+        return JSONResponse(content=response)
 
     except HTTPException:
         raise
     except Exception as exc:
         logger.exception("Analysis error")
-        raise HTTPException(status_code=500, detail=f"Analysis error: {exc}") from exc
+        raise HTTPException(status_code=500, detail="Analysis failed") from exc
     finally:
-        if temp_path and os.path.exists(temp_path):
-            os.remove(temp_path)
+        if temp_path:
+            try:
+                os.remove(temp_path)
+            except FileNotFoundError:
+                pass
 
 
 @router.post("/analyze/raw")
@@ -99,6 +108,7 @@ async def analyze_raw_logs(
             "detected_type": log_type.value if hasattr(log_type, "value") else str(log_type),
             "total_logs": len(lines),
         }
+        _mask_pii_in_response(response)
 
         return JSONResponse(content=response)
 
@@ -106,7 +116,17 @@ async def analyze_raw_logs(
         raise
     except Exception as exc:
         logger.exception("Raw log analysis error")
-        raise HTTPException(status_code=500, detail=f"Analysis error: {exc}") from exc
+        raise HTTPException(status_code=500, detail="Analysis failed") from exc
+
+
+def _mask_pii_in_response(response: dict) -> None:
+    """Mask PII in event log_message and root_cause fields before returning to client."""
+    events = response.get("events", [])
+    for event in events:
+        if "log_message" in event:
+            event["log_message"] = _pii_detector.mask(event["log_message"])
+        if "root_cause" in event and event["root_cause"]:
+            event["root_cause"] = _pii_detector.mask(event["root_cause"])
 
 
 def _load_logs(path: str, filename: str) -> list[tuple[str, str]]:

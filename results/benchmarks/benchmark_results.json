@@ -1,0 +1,661 @@
+{
+  "synthetic": {
+    "Regex Only": {
+      "accuracy": 0.7099585062240664,
+      "precision_macro": 0.53811583395476,
+      "recall_macro": 0.43584905660377354,
+      "f1_macro": 0.4687654889788792,
+      "f1_weighted": 0.7379664336995586,
+      "classification_report": {
+        "Critical Error": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 161.0
+        },
+        "Deprecation Warning": {
+          "precision": 1.0,
+          "recall": 0.6666666666666666,
+          "f1-score": 0.8,
+          "support": 3.0
+        },
+        "Error": {
+          "precision": 0.3959731543624161,
+          "recall": 0.3333333333333333,
+          "f1-score": 0.3619631901840491,
+          "support": 177.0
+        },
+        "HTTP Status": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 1017.0
+        },
+        "Resource Usage": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 177.0
+        },
+        "Security Alert": {
+          "precision": 0.9851851851851852,
+          "recall": 0.3584905660377358,
+          "f1-score": 0.525691699604743,
+          "support": 371.0
+        },
+        "System Notification": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 356.0
+        },
+        "Unclassified": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 0.0
+        },
+        "User Action": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 144.0
+        },
+        "Workflow Error": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 4.0
+        },
+        "accuracy": 0.7099585062240664,
+        "macro avg": {
+          "precision": 0.53811583395476,
+          "recall": 0.43584905660377354,
+          "f1-score": 0.4687654889788792,
+          "support": 2410.0
+        },
+        "weighted avg": {
+          "precision": 0.8114485278115565,
+          "recall": 0.7099585062240664,
+          "f1-score": 0.7379664336995586,
+          "support": 2410.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          0,
+          0,
+          78,
+          0,
+          0,
+          2,
+          0,
+          81,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          59,
+          0,
+          0,
+          0,
+          0,
+          112,
+          0,
+          6
+        ],
+        [
+          0,
+          0,
+          0,
+          1017,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          177,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          9,
+          0,
+          0,
+          133,
+          0,
+          229,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          356,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          144,
+          0
+        ],
+        [
+          0,
+          0,
+          3,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "labels": [
+        "Critical Error",
+        "Deprecation Warning",
+        "Error",
+        "HTTP Status",
+        "Resource Usage",
+        "Security Alert",
+        "System Notification",
+        "Unclassified",
+        "User Action",
+        "Workflow Error"
+      ],
+      "total_samples": 2410,
+      "elapsed_seconds": 5.17,
+      "throughput_logs_per_sec": 466.6
+    },
+    "LLM (Simulated)": {
+      "accuracy": 0.7182572614107884,
+      "precision_macro": 0.5827178470796791,
+      "recall_macro": 0.5977485075566944,
+      "f1_macro": 0.49511561900064704,
+      "f1_weighted": 0.7173156814711655,
+      "classification_report": {
+        "Critical Error": {
+          "precision": 0.7727272727272727,
+          "recall": 0.422360248447205,
+          "f1-score": 0.5461847389558233,
+          "support": 161.0
+        },
+        "Deprecation Warning": {
+          "precision": 1.0,
+          "recall": 0.6666666666666666,
+          "f1-score": 0.8,
+          "support": 3.0
+        },
+        "Error": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 177.0
+        },
+        "HTTP Status": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 1017.0
+        },
+        "Resource Usage": {
+          "precision": 0.7436974789915967,
+          "recall": 1.0,
+          "f1-score": 0.8530120481927711,
+          "support": 177.0
+        },
+        "Security Alert": {
+          "precision": 1.0,
+          "recall": 0.18059299191374664,
+          "f1-score": 0.3059360730593607,
+          "support": 371.0
+        },
+        "System Notification": {
+          "precision": 0.875,
+          "recall": 0.7078651685393258,
+          "f1-score": 0.782608695652174,
+          "support": 356.0
+        },
+        "Unclassified": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 0.0
+        },
+        "User Action": {
+          "precision": 0.37017994858611825,
+          "recall": 1.0,
+          "f1-score": 0.5403377110694184,
+          "support": 144.0
+        },
+        "Workflow Error": {
+          "precision": 0.06557377049180328,
+          "recall": 1.0,
+          "f1-score": 0.12307692307692308,
+          "support": 4.0
+        },
+        "accuracy": 0.7182572614107884,
+        "macro avg": {
+          "precision": 0.5827178470796791,
+          "recall": 0.5977485075566944,
+          "f1-score": 0.49511561900064704,
+          "support": 2410.0
+        },
+        "weighted avg": {
+          "precision": 0.834901142061814,
+          "recall": 0.7182572614107884,
+          "f1-score": 0.7173156814711655,
+          "support": 2410.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          68,
+          0,
+          0,
+          0,
+          10,
+          0,
+          0,
+          72,
+          0,
+          11
+        ],
+        [
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          20,
+          0,
+          0,
+          0,
+          0,
+          0,
+          36,
+          78,
+          0,
+          43
+        ],
+        [
+          0,
+          0,
+          0,
+          1017,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          177,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          67,
+          0,
+          109,
+          192,
+          3
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          51,
+          0,
+          252,
+          0,
+          53,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          144,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4
+        ]
+      ],
+      "labels": [
+        "Critical Error",
+        "Deprecation Warning",
+        "Error",
+        "HTTP Status",
+        "Resource Usage",
+        "Security Alert",
+        "System Notification",
+        "Unclassified",
+        "User Action",
+        "Workflow Error"
+      ],
+      "total_samples": 2410,
+      "elapsed_seconds": 0.09,
+      "throughput_logs_per_sec": 27555.7
+    },
+    "Hybrid (Regex+LLM)": {
+      "accuracy": 0.791701244813278,
+      "precision_macro": 0.6733439986472105,
+      "recall_macro": 0.5726502988397983,
+      "f1_macro": 0.5639131597106352,
+      "f1_weighted": 0.7997423183113979,
+      "classification_report": {
+        "Critical Error": {
+          "precision": 0.8636363636363636,
+          "recall": 0.11801242236024845,
+          "f1-score": 0.20765027322404372,
+          "support": 161.0
+        },
+        "Deprecation Warning": {
+          "precision": 1.0,
+          "recall": 0.6666666666666666,
+          "f1-score": 0.8,
+          "support": 3.0
+        },
+        "Error": {
+          "precision": 0.3959731543624161,
+          "recall": 0.3333333333333333,
+          "f1-score": 0.3619631901840491,
+          "support": 177.0
+        },
+        "HTTP Status": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 1017.0
+        },
+        "Resource Usage": {
+          "precision": 0.9725274725274725,
+          "recall": 1.0,
+          "f1-score": 0.9860724233983287,
+          "support": 177.0
+        },
+        "Security Alert": {
+          "precision": 0.9851851851851852,
+          "recall": 0.3584905660377358,
+          "f1-score": 0.525691699604743,
+          "support": 371.0
+        },
+        "System Notification": {
+          "precision": 0.9081632653061225,
+          "recall": 1.0,
+          "f1-score": 0.9518716577540107,
+          "support": 356.0
+        },
+        "Unclassified": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 0.0
+        },
+        "User Action": {
+          "precision": 0.5454545454545454,
+          "recall": 1.0,
+          "f1-score": 0.7058823529411765,
+          "support": 144.0
+        },
+        "Workflow Error": {
+          "precision": 0.0625,
+          "recall": 0.25,
+          "f1-score": 0.1,
+          "support": 4.0
+        },
+        "accuracy": 0.791701244813278,
+        "macro avg": {
+          "precision": 0.6733439986472105,
+          "recall": 0.5726502988397983,
+          "f1-score": 0.5639131597106352,
+          "support": 2410.0
+        },
+        "weighted avg": {
+          "precision": 0.8999482764328225,
+          "recall": 0.791701244813278,
+          "f1-score": 0.7997423183113979,
+          "support": 2410.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          19,
+          0,
+          78,
+          0,
+          5,
+          2,
+          0,
+          54,
+          0,
+          3
+        ],
+        [
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          59,
+          0,
+          0,
+          0,
+          36,
+          67,
+          0,
+          12
+        ],
+        [
+          0,
+          0,
+          0,
+          1017,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          177,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          9,
+          0,
+          0,
+          133,
+          0,
+          109,
+          120,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          356,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          144,
+          0
+        ],
+        [
+          0,
+          0,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ]
+      ],
+      "labels": [
+        "Critical Error",
+        "Deprecation Warning",
+        "Error",
+        "HTTP Status",
+        "Resource Usage",
+        "Security Alert",
+        "System Notification",
+        "Unclassified",
+        "User Action",
+        "Workflow Error"
+      ],
+      "total_samples": 2410,
+      "elapsed_seconds": 5.27,
+      "throughput_logs_per_sec": 457.3
+    }
+  }
+}
