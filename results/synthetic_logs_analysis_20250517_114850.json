@@ -1,9 +1,0 @@
-{
-  "events": [
-    {
-      "event_type": "Error",
-      "log_message": "1/14/2025 23:07,ModernCRM,Email service experiencing issues with sending,Critical Error,bert\n",
-      "severity": {
-        "_value_": "MEDIUM",
-        "_name_": "MEDIUM",
-        "__objclass__": 
