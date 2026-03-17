@@ -39,10 +39,20 @@ def run() -> None:
     p_serve.add_argument("--port", type=int, default=8000)
 
     # --- benchmark ---
-    sub.add_parser("benchmark", help="Run evaluation benchmarks")
+    p_bench = sub.add_parser("benchmark", help="Run evaluation benchmarks")
+    p_bench.add_argument("--datasets", nargs="*", default=None, help="Datasets to evaluate")
 
     # --- train ---
     sub.add_parser("train", help="Train the BERT classifier")
+
+    # --- cross-domain ---
+    sub.add_parser("cross-domain", help="Run cross-domain generalisation evaluation")
+
+    # --- zero-shot ---
+    sub.add_parser("zero-shot", help="Run zero-shot classification evaluation")
+
+    # --- adversarial ---
+    sub.add_parser("adversarial", help="Run adversarial robustness tests")
 
     args = parser.parse_args()
 
@@ -51,9 +61,15 @@ def run() -> None:
     elif args.command == "serve":
         _cmd_serve(args.host, args.port)
     elif args.command == "benchmark":
-        _cmd_benchmark()
+        _cmd_benchmark(args.datasets)
     elif args.command == "train":
         _cmd_train()
+    elif args.command == "cross-domain":
+        _cmd_cross_domain()
+    elif args.command == "zero-shot":
+        _cmd_zero_shot()
+    elif args.command == "adversarial":
+        _cmd_adversarial()
     else:
         parser.print_help()
 
@@ -113,14 +129,29 @@ def _cmd_serve(host: str, port: int) -> None:
     uvicorn.run("sentinel.api.app:app", host=host, port=port, reload=True)
 
 
-def _cmd_benchmark() -> None:
+def _cmd_benchmark(datasets: list[str] | None = None) -> None:
     from sentinel.evaluation.benchmark import run_benchmark
-    run_benchmark()
+    run_benchmark(datasets=datasets)
 
 
 def _cmd_train() -> None:
     from sentinel.evaluation.train import train_bert_classifier
     train_bert_classifier()
+
+
+def _cmd_cross_domain() -> None:
+    from sentinel.evaluation.benchmark import run_cross_domain_evaluation
+    run_cross_domain_evaluation()
+
+
+def _cmd_zero_shot() -> None:
+    from sentinel.evaluation.zero_shot import run_zero_shot_evaluation
+    run_zero_shot_evaluation()
+
+
+def _cmd_adversarial() -> None:
+    from sentinel.evaluation.adversarial import run_adversarial_tests
+    run_adversarial_tests()
 
 
 def _print_analysis(analysis: Any) -> None:

@@ -18,7 +18,7 @@ from sentinel.api.middleware import (
     RateLimitMiddleware,
     RequestSizeLimitMiddleware,
 )
-from sentinel.api.routes import analyze, classify, health
+from sentinel.api.routes import analyze, classify, feedback, health
 from sentinel.core.config import SentinelSettings, get_settings
 
 logger = logging.getLogger(__name__)
@@ -51,6 +51,7 @@ def create_app(settings: SentinelSettings | None = None) -> FastAPI:
     app.include_router(health.router)
     app.include_router(classify.router)
     app.include_router(analyze.router)
+    app.include_router(feedback.router)
 
     # --- Templates / static ---
     templates = Jinja2Templates(directory=str(_TEMPLATES_DIR))
