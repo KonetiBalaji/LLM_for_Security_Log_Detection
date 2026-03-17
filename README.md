@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/KonetiBalaji/LLM_for_Security_Log_Detection/actions/workflows/ci.yml/badge.svg)](https://github.com/KonetiBalaji/LLM_for_Security_Log_Detection/actions)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
-[![Tests](https://img.shields.io/badge/tests-102%20passed-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-140%20passed-brightgreen.svg)]()
 [![Coverage](https://img.shields.io/badge/coverage-68%25-yellow.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -385,30 +385,24 @@ sentinel/
 - [x] MITRE ATT&CK technique mapping (11 techniques, 7 tactics)
 - [x] Security hardening (auth, rate limiting, input validation, XSS prevention)
 - [x] SOLID architecture with Strategy, Chain of Responsibility, and Facade patterns
-- [x] 102 automated tests (unit + integration)
+- [x] 140 automated tests (unit + integration)
 - [x] CI/CD pipeline (GitHub Actions)
 - [x] Docker containerisation
 - [x] Web interface with MITRE display
 - [x] Multi-format log parsing (6 formats with auto-detection)
-- [x] Benchmark harness for multi-model comparison
-
-### In Progress
-
-- [ ] Cross-domain evaluation on HDFS, BGL, and Thunderbird public datasets
-- [ ] Confidence calibration (Platt scaling on BERT outputs)
-- [ ] Technical white paper: "Hybrid Multi-Tier Approaches to Security Log Classification"
-- [ ] MLflow experiment tracking integration
-
-### Planned
-
-- [ ] Isolation Forest anomaly detection tier
-- [ ] SHAP explainability for ML classifier decisions
-- [ ] Streaming ingestion (Kafka consumer)
-- [ ] SOC analyst feedback loop (true/false positive marking)
-- [ ] Adversarial robustness testing (log poisoning, prompt injection)
-- [ ] AWS Terraform deployment (ECS Fargate + S3 + RDS)
-- [ ] Zero-shot / few-shot classification evaluation on unseen log formats
-- [ ] Privacy-preserving log analysis (PII detection and masking)
+- [x] Benchmark harness for multi-model, multi-dataset comparison
+- [x] Cross-domain evaluation on HDFS, BGL, and Thunderbird public datasets
+- [x] Confidence calibration (Platt scaling and temperature scaling)
+- [x] Technical white paper: "Hybrid Multi-Tier Approaches to Security Log Classification"
+- [x] MLflow experiment tracking integration
+- [x] Isolation Forest anomaly detection tier
+- [x] SHAP-style explainability for ML classifier decisions (word-level leave-one-out)
+- [x] Streaming ingestion (Kafka consumer with batch processing)
+- [x] SOC analyst feedback loop (true/false positive marking with retraining export)
+- [x] Adversarial robustness testing (log poisoning, prompt injection, label flipping)
+- [x] AWS Terraform deployment (ECS Fargate + ALB + S3 + CloudWatch)
+- [x] Zero-shot / few-shot classification evaluation on unseen log formats
+- [x] Privacy-preserving log analysis (PII detection and masking)
 
 ---
 
